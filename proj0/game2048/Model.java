@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Colin Mufan
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -16,7 +16,7 @@ public class Model extends Observable {
     private int maxScore;
     /** True iff game is ended. */
     private boolean gameOver;
-
+    private boolean merged;
     /* Coordinate System: column C, row R of the board (where row 0,
      * column 0 is the lower-left corner of the board) will correspond
      * to board.tile(c, r).  Be careful! It works like (x, y) coordinates.
@@ -107,18 +107,55 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
+        board.setViewingPerspective(side);
         boolean changed;
         changed = false;
 
-        // TODO: Modify this.board (and perhaps this.score) to account
-        // for the tilt to the Side SIDE. If the board changed, set the
-        // changed local variable to true.
+        for (int col = 0; col < board.size(); col++) {
+            if (tiltOneColumn(col)) {
+                changed = true;
+            }
+        }
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
+        board.setViewingPerspective(Side.NORTH);
         return changed;
+    }
+
+    public boolean tiltOneColumn(int col) {
+        boolean changed = false;
+        merged = false;
+        for (int row = board.size() - 1; row >= 0; row--) {
+            if (board.tile(col, row) != null) {
+                int rowAfterTilt = finalRowIndex(col, row);
+                if (rowAfterTilt != row) {
+                    changed = true;
+                    int valueCopy = board.tile(col, row).value();
+                    if (board.move(col, rowAfterTilt, board.tile(col, row))) {
+                        this.score += 2 * valueCopy;
+                    }
+                }
+            }
+        }
+        return changed;
+    }
+
+    public int finalRowIndex(int col, int row) {
+        int rowDestination = row + 1;
+        while (rowDestination < board.size() && board.tile(col, rowDestination) == null) {
+            rowDestination += 1;
+        }
+        if (!merged && rowDestination < board.size()
+                    && board.tile(col, rowDestination).value() == board.tile(col, row).value()) {
+            merged = true;
+        } else {
+            merged = false;
+            rowDestination -= 1;
+        }
+        return rowDestination;
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -137,7 +174,13 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +190,13 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) != null && b.tile(i, j).value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -158,13 +207,42 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (sameAdjacentTiles(b, i, j)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    public static boolean sameAdjacentTiles(Board b, int colIndex, int rowIndex) {
+        if (withinRange(b, colIndex - 1, rowIndex)
+            && b.tile(colIndex - 1, rowIndex).value() == b.tile(colIndex, rowIndex).value()) {
+            return true;
+        } else if (withinRange(b, colIndex + 1, rowIndex)
+                && b.tile(colIndex + 1, rowIndex).value() == b.tile(colIndex, rowIndex).value()) {
+            return true;
+        } else if (withinRange(b, colIndex, rowIndex - 1)
+                && b.tile(colIndex, rowIndex - 1).value() == b.tile(colIndex, rowIndex).value()) {
+            return true;
+        } else if (withinRange(b, colIndex, rowIndex + 1)
+                && b.tile(colIndex, rowIndex + 1).value() == b.tile(colIndex, rowIndex).value()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean withinRange(Board b, int colIndex, int rowIndex) {
+        return 0 <= colIndex && colIndex < b.size() && 0 <= rowIndex && rowIndex < b.size();
+    }
 
     @Override
-     /** Returns the model as a string, used for debugging. */
+    /** Returns the model as a string, used for debugging. */
     public String toString() {
         Formatter out = new Formatter();
         out.format("%n[%n");
