@@ -5,7 +5,7 @@ public class LinkedListDeque<T> implements Deque<T> {
     private Node recursiveSentinel;
     private int size;
 
-    LinkedListDeque() {
+    public LinkedListDeque() {
         sentinel = new Node(null, null, null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;

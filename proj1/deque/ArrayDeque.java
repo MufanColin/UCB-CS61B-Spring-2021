@@ -6,7 +6,7 @@ public class ArrayDeque<T> implements Deque<T> {
     private int headIndex; // where to addFirst
     private int tailIndex; // where to addLast
 
-    ArrayDeque() {
+    public ArrayDeque() {
         items = (T[]) new Object[8];
         size = 0;
         headIndex = 0;
