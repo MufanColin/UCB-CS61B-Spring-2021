@@ -26,7 +26,7 @@ public class TimeAList {
         AList<Integer> Ns = new AList<>();
         AList<Double> times = new AList<>();
         AList<Integer> opCounts = new AList<>();
-        for (int i = 1000; i <= 10000000; i *= 2) {
+        for (int i = 1000; i <= 64000; i *= 2) {
             Stopwatch sw = new Stopwatch();
             for (int j = 0; j < i; j++) {
                 arrayList.addLast(j);

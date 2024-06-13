@@ -26,7 +26,7 @@ public class TimeSLList {
         AList<Integer> Ns = new AList<>();
         AList<Double> times = new AList<>();
         AList<Integer> opCounts = new AList<>();
-        for (int i = 1000; i <= 128000; i *= 2) {
+        for (int i = 1000; i <= 64000; i *= 2) {
             SLList<Integer> linkedList = new SLList<>();
             for (int j = 0; j < i; j++) {
                 linkedList.addLast(j);
