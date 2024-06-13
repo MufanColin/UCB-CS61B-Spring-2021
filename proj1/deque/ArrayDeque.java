@@ -130,7 +130,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
         // if (o instanceof Deque other)
         if (o instanceof Deque) {
-            Deque other = (Deque) o; // if the autograder does not support o instanceof Deque other, we do this instead.
+            // if the autograder does not support o instanceof Deque other, we do this instead.
+            Deque other = (Deque) o;
             if (this.size() != other.size()) {
                 return false;
             }
