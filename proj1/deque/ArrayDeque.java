@@ -1,6 +1,8 @@
 package deque;
 
-public class ArrayDeque<T> implements Deque<T> {
+import java.util.Iterator;
+
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private T[] items;
     private int size;
     private int headIndex; // where to addFirst
@@ -41,11 +43,6 @@ public class ArrayDeque<T> implements Deque<T> {
         items[tailIndex % items.length] = item;
         tailIndex = (tailIndex + 1) % items.length;
         size += 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size() == 0;
     }
 
     @Override
@@ -95,5 +92,55 @@ public class ArrayDeque<T> implements Deque<T> {
             return null;
         }
         return items[(headIndex + 1 + index) % items.length];
+    }
+
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int wizPos;
+
+        public ArrayDequeIterator() {
+            wizPos = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return wizPos < size();
+        }
+
+        @Override
+        public T next() {
+            T returnItem = items[(headIndex + 1 + wizPos) % items.length];
+            wizPos += 1;
+            return returnItem;
+        }
+    }
+
+    /** Returns whether or not the parameter o is equal to the Deque.
+     * o is considered equal if it is a Deque and if it contains the same contents
+     * (as governed by the generic T’s equals method) in the same order.*/
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true; // for efficiency
+        }
+        if (o == null) {
+            return false;
+        }
+        // if (o instanceof Deque other)
+        if (o instanceof Deque) {
+            Deque other = (Deque) o; // if the autograder does not support o instanceof Deque other, we do this instead.
+            if (this.size() != other.size()) {
+                return false;
+            }
+            for (int i = 0; i < this.size(); i++) {
+                if (!this.get(i).equals(other.get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

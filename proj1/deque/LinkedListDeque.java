@@ -1,6 +1,8 @@
 package deque;
 
-public class LinkedListDeque<T> implements Deque<T> {
+import java.util.Iterator;
+
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     private final Node sentinel;
     private Node recursiveSentinel;
     private int size;
@@ -40,11 +42,6 @@ public class LinkedListDeque<T> implements Deque<T> {
         sentinel.prev = n;
         t.next = n;
         size += 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size() == 0;
     }
 
     @Override
@@ -116,5 +113,52 @@ public class LinkedListDeque<T> implements Deque<T> {
         }
         recursiveSentinel = recursiveSentinel.next;
         return getRecursive(index - 1);
+    }
+
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
+    private class LinkedListDequeIterator implements Iterator<T> {
+        private Node wizNode;
+        public LinkedListDequeIterator() {
+            wizNode = sentinel.next;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return wizNode != sentinel;
+        }
+
+        @Override
+        public T next() {
+            T returnValue = wizNode.item;
+            wizNode = wizNode.next;
+            return returnValue;
+        }
+    }
+
+    /** Returns whether or not the parameter o is equal to the Deque.
+     * o is considered equal if it is a Deque and if it contains the same contents
+     * (as governed by the generic T’s equals method) in the same order.*/
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true; // for efficiency
+        }
+        if (o == null) {
+            return false;
+        }
+        if (o instanceof Deque other) {
+            if (this.size() != other.size()) {
+                return false;
+            }
+            for (int i = 0; i < this.size(); i++) {
+                if (!this.get(i).equals(other.get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -1,6 +1,10 @@
 package deque;
 
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import static org.junit.Assert.*;
 
 
@@ -130,26 +134,115 @@ public class LinkedListDequeTest {
     }
 
     @Test
-    public void bigALDequeTest() {
+    public void enhancedForLoopTest() {
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
+        for (int i = 0; i < 1000; i++) {
+            lld1.addLast(i);
+        }
+
+        for (int i: lld1) {
+            assertEquals("Should have the same value", i, (double) lld1.get(i), 0.0);
+        }
 
         ArrayDeque<Integer> ald1 = new ArrayDeque<Integer>();
-        int n = 100;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < 1000; i++) {
             ald1.addLast(i);
         }
 
-        ald1.printDeque();
+        for (int i: ald1) {
+            assertEquals("Should have the same value", i, (double) ald1.get(i), 0.0);
+        }
+    }
+
+    @Test
+    public void equals() {
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        for (int i = 0; i < 100; i++) {
+            lld1.addLast(i);
+        }
+        ArrayDeque<Integer> ard1 = new ArrayDeque<>();
+        for (int i = 99; i >= 0; i--) {
+            ard1.addFirst(i);
+        }
+        ArrayDeque<Integer> ard2 = new ArrayDeque<>();
+        for (int i = 0; i <= 100; i++) {
+            ard2.addLast(i);
+        }
+        ArrayList<Integer> arList = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            arList.add(i);
+        }
+        assertEquals(lld1, ard1);
+        assertNotEquals(lld1, ard2);
+        assertNotEquals(lld1, arList);
+    }
+
+    @Test
+    public void bigALDequeTest() {
+
+        ArrayDeque<Integer> ard1 = new ArrayDeque<Integer>();
+        int n = 100;
+        for (int i = 0; i < n; i++) {
+            ard1.addLast(i);
+        }
+
+        ard1.printDeque();
 
         for (int i = 0; i < n; i++) {
-            assertEquals("Should have the same value", i, ald1.get(i), 0.0);
+            assertEquals("Should have the same value", i, ard1.get(i), 0.0);
         }
 
         for (int i = 0; i < n / 2; i++) {
-            assertEquals("Should have the same value", i, ald1.removeFirst(), 0.0);
+            assertEquals("Should have the same value", i, ard1.removeFirst(), 0.0);
         }
 
         for (int i = n - 1; i > n / 2; i--) {
-            assertEquals("Should have the same value", i, ald1.removeLast(), 0.0);
+            assertEquals("Should have the same value", i, ard1.removeLast(), 0.0);
         }
+    }
+
+    @Test
+    public void testMaxArrayDeque() {
+        Comparator<String> ssc = getStrangeStringComparator();
+        MaxArrayDeque<String> maxDeque = new MaxArrayDeque<>(ssc);
+        maxDeque.addLast("banana");
+        maxDeque.addLast("watermelon");
+        maxDeque.addLast("apple");
+        assertEquals("watermelon", maxDeque.max());
+
+        Comparator<Double> sdc = getStrangeDoubleComparator();
+        MaxArrayDeque<Double> maxDeque2 = new MaxArrayDeque<>(sdc);
+        maxDeque2.addLast(2 * 3.14);
+        maxDeque2.addLast(3.14 / 2);
+        maxDeque2.addLast(Math.sqrt(3) / 2 * 3.14);
+        assertEquals("Should have the same value", 3.14 / 2, maxDeque2.max(), 1e-8);
+    }
+
+    private static class StrangeStringComparator implements Comparator<String> {
+        @Override
+        public int compare(String o1, String o2) {
+            StringBuilder sb = new StringBuilder(o1);
+            sb.reverse();
+            o1 = sb.toString();
+            sb = new StringBuilder(o2);
+            sb.reverse();
+            o2 = sb.toString();
+            return o1.compareTo(o2);
+        }
+    }
+
+    public static Comparator<String> getStrangeStringComparator() {
+        return new StrangeStringComparator();
+    }
+
+    private static class StrangeDoubleComparator implements Comparator<Double> {
+        @Override
+        public int compare(Double o1, Double o2) {
+            return (int) (Math.sin(o1) - Math.sin(o2));
+        }
+    }
+
+    public static Comparator<Double> getStrangeDoubleComparator() {
+        return new StrangeDoubleComparator();
     }
 }

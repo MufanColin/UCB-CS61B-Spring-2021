@@ -8,9 +8,6 @@ public interface Deque<T> {
     /** Adds an item of type T to the back of the deque. You can assume that item is never null. */
     void addLast(T item);
 
-    /** Returns true if deque is empty, false otherwise. */
-    boolean isEmpty();
-
     /** Returns the number of items in the deque. */
     int size();
 
@@ -27,4 +24,8 @@ public interface Deque<T> {
     /** Gets the item at the given index, where 0 is the front, 1 is the next item, and so forth.
      * If no such item exists, returns null. Must not alter the deque! Must use iteration!*/
     T get(int index);
+
+    default boolean isEmpty() {
+        return size() == 0;
+    }
 }
