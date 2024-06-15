@@ -1,0 +1,1 @@
+My implementation of BSTMap is much slower than the Java's Build-in TreeMap and HashMap.
