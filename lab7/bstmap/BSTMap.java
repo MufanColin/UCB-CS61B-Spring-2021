@@ -2,7 +2,7 @@ package bstmap;
 
 import java.util.*;
 
-public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>, Iterable<K> {
+public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     // The above line uses Java's bounded type parameter: extends Comparable<K>
     private BSTNode root;
     private int size;
@@ -223,7 +223,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>, Iterabl
         }
     }
 
-    public BSTNode find(K key) {
+    private BSTNode find(K key) {
         return findHelper(key, root);
     }
 
