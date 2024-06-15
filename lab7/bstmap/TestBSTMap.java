@@ -185,5 +185,15 @@ public class TestBSTMap {
         for (Integer key: b2) {
             System.out.println(key);
         }
+
+        BSTMap<Integer, Integer> b3 = new BSTMap<>();
+        b3.put(8, 8 * 10);
+        b3.put(6, 6 * 10);
+        b3.put(2, 2 * 10);
+        b3.put(10, 10 * 10);
+        b3.put(12, 12 * 10);
+        b3.put(7, 7 * 10);
+        b3.remove(8, 80);
+        b3.printInOrder();
     }
 }

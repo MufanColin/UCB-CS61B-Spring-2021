@@ -17,13 +17,13 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private class BSTNode {
         public K key;
         public V value;
-        public BSTNode left, right, parent;
+        public BSTNode left, right;
+
         public BSTNode() {
             key = null;
             value = null;
             left = null;
             right = null;
-            parent = null;
         }
 
         public BSTNode(K k, V v) {
@@ -31,7 +31,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             value = v;
             left = null;
             right = null;
-            parent = null;
         }
     }
 
@@ -53,11 +52,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        return key != null && containsKeyHelper(key, root);
+        return containsKeyHelper(key, root);
     }
 
     private boolean containsKeyHelper(K key, BSTNode node) {
-        // We can assume that key won't be null here.
         if (node == null) {
             return false;
         }
@@ -69,7 +67,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public V get(K key) {
-        if (key == null) {
+        if (!containsKey(key)) {
             return null;
         }
         return getHelper(key, root);
@@ -78,20 +76,15 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private V getHelper(K key, BSTNode node) {
         if (node == null) {
             return null;
-        } else if (key.equals(node.key)) {
-            return node.value;
-        } else if (key.compareTo(node.key) < 0) {
-            V value = getHelper(key, node.left);
-            if (value != null) {
-                return value;
-            }
-        } else {
-            V value = getHelper(key, node.right);
-            if (value != null) {
-                return value;
-            }
         }
-        return null;
+        int cmp = key.compareTo(node.key);
+        if (cmp == 0) {
+            return node.value;
+        } else if (cmp < 0) {
+            return getHelper(key, node.left);
+        } else {
+            return getHelper(key, node.right);
+        }
     }
 
     @Override
@@ -111,13 +104,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (node == null) {
             node = new BSTNode(key, value);
         } else if (key.compareTo(node.key) < 0) {
-            BSTNode lchild = putHelper(key, value, node.left);
-            node.left = lchild;
-            lchild.parent = node;
+            node.left = putHelper(key, value, node.left);
         } else {
-            BSTNode rchild = putHelper(key, value, node.right);
-            node.right = rchild;
-            rchild.parent = node;
+            node.right = putHelper(key, value, node.right);
         }
         return node;
     }
@@ -139,111 +128,75 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public V remove(K key) {
+        // Inspired by https://math.oxford.emory.edu/site/cs171/hibbardDeletion/
+        // and https://algs4.cs.princeton.edu/32bst/BST.java.html
         if (!containsKey(key)) {
             return null;
         }
-        V value = get(key);
-        BSTNode nodeDelete = find(key);
-        if (nodeDelete.left != null && nodeDelete.right != null) {
-            BSTNode nodeToReplace = largestNodeInLeftSubTree(nodeDelete.left);
-            if (nodeDelete.parent != null) {
-                // nodeDelete is not the root of the tree
-                if (nodeToReplace.parent == nodeDelete) {
-                    nodeToReplace.parent = nodeDelete.parent;
-                    // do not have to change nodeToReplace.left
-                    nodeToReplace.right = nodeDelete.right;
-                    nodeDelete.right.parent = nodeToReplace;
-                } else {
-                    nodeToReplace.parent = nodeDelete.parent;
-                    nodeToReplace.left = nodeDelete.left;
-                    nodeToReplace.right = nodeDelete.right;
-                    nodeDelete.left.parent = nodeToReplace;
-                    nodeDelete.right.parent = nodeToReplace;
-                }
-                if (nodeDelete.parent.left == nodeDelete) {
-                    nodeDelete.parent.left = nodeToReplace;
-                } else {
-                    nodeDelete.parent.right = nodeToReplace;
-                }
-            } else {
-                // nodeDelete is the root of the tree
-                root = nodeToReplace;
-                root.right = nodeDelete.right;
-                nodeDelete.right.parent = root;
-            }
-        } else if (nodeDelete.left != null) {
-            nodeDelete.left.parent = nodeDelete.parent;
-            if (nodeDelete.parent != null) {
-                if (nodeDelete.parent.left == nodeDelete) {
-                    nodeDelete.parent.left = nodeDelete.left;
-                } else {
-                    nodeDelete.parent.right = nodeDelete.left;
-                }
-            } else {
-                nodeDelete = nodeDelete.left;
-                root = nodeDelete;
-            }
-        } else if (nodeDelete.right != null) {
-            nodeDelete.right.parent = nodeDelete.parent;
-            if (nodeDelete.parent != null) {
-                if (nodeDelete.parent.left == nodeDelete) {
-                    nodeDelete.parent.left = nodeDelete.right;
-                } else {
-                    nodeDelete.parent.right = nodeDelete.right;
-                }
-            } else {
-                nodeDelete = nodeDelete.right;
-                root = nodeDelete;
-            }
-        } else {
-            if (nodeDelete.parent != null) {
-                if (nodeDelete.parent.left == nodeDelete) {
-                    nodeDelete.parent.left = null;
-                } else {
-                    nodeDelete.parent.right = null;
-                }
-            } else {
-                root = null;
-            }
-        }
+        V returnValue = get(key);
+        delete(key);
         size -= 1;
-        return value;
+        return returnValue;
     }
 
     @Override
     public V remove(K key, V value) {
-        if (!containsKey(key)) {
+        if (!containsKey(key) || get(key) != value) {
             return null;
         }
-        V currentValue = get(key);
-        if (currentValue.equals(value)) {
-            return remove(key);
+        return remove(key);
+    }
+
+    private void delete(K key) {
+        // Inspired by https://math.oxford.emory.edu/site/cs171/hibbardDeletion/
+        // and https://algs4.cs.princeton.edu/32bst/BST.java.html
+        root = deleteHelper(root, key);
+    }
+
+    /** Delete the successor of the node with Key = key in the BST. */
+    private BSTNode deleteHelper(BSTNode n, K key) {
+        // Inspired by https://math.oxford.emory.edu/site/cs171/hibbardDeletion/
+        // and https://algs4.cs.princeton.edu/32bst/BST.java.html
+        if (n == null) {
+            return n;
+        }
+        int cmp = key.compareTo(n.key);
+        if (cmp < 0) {
+            n.left = deleteHelper(n.left, key);
+        } else if (cmp > 0) {
+            n.right = deleteHelper(n.right, key);
         } else {
-            return null;
+            if (n.right == null) {
+                return n.left;
+            }
+            if (n.left  == null) {
+                return n.right;
+            }
+            BSTNode t = n;
+            n = min(t.right);
+            n.right = deleteMin(t.right);
+            n.left = t.left;
         }
+        return n;
     }
 
-    private BSTNode find(K key) {
-        return findHelper(key, root);
+    private BSTNode min(BSTNode node) {
+        BSTNode t = node;
+        while (t.left != null) {
+            t = t.left;
+        }
+        return t;
     }
 
-    private BSTNode findHelper(K key, BSTNode node) {
-        if (node == null || key.equals(node.key)) {
-            return node;
+    /** Delete the min-key node in the subtree of n*/
+    private BSTNode deleteMin(BSTNode n) {
+        // Inspired by https://math.oxford.emory.edu/site/cs171/hibbardDeletion/
+        // and https://algs4.cs.princeton.edu/32bst/BST.java.html
+        if (n.left == null) {
+            return n.right; // current node is the min
         }
-        BSTNode leftResult = findHelper(key, node.left);
-        BSTNode rightResult = findHelper(key, node.right);
-        if (leftResult != null) {
-            return leftResult;
-        }
-        return rightResult;
-    }
-
-    private BSTNode largestNodeInLeftSubTree(BSTNode node) {
-        BSTNode n = node;
-        while (n.right != null) {
-            n = n.right;
-        }
+        // there are nodes smaller than the current node (and they are to the left)
+        n.left = deleteMin(n.left);
         return n;
     }
 
