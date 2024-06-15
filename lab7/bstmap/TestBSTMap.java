@@ -3,6 +3,8 @@ package bstmap;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.util.Set;
+
 /** Tests by Brendan Hu, Spring 2015, revised for 2016 by Josh Hug */
 public class TestBSTMap {
 
@@ -96,7 +98,8 @@ public class TestBSTMap {
         b.printInOrder();
     }
 
-    @Test public void studentSimpleTest() {
+    @Test
+    public void studentSimpleTest() {
         BSTMap<String, Integer> b = new BSTMap<String, Integer>();
         int i = 0;
         b.put("hi" + i, 1+i);
@@ -104,5 +107,83 @@ public class TestBSTMap {
         assertTrue( null != b.get("hi" + i));
         assertTrue(b.get("hi"+i).equals(1+i));
         assertTrue(b.containsKey("hi" + i));
+    }
+
+    @Test
+    public void keySetTest() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        b.put("banana", 1);
+        b.put("apple", 10);
+        b.put("orange", 3);
+        b.put("watermelon", 50);
+        b.put("strawberry", 100);
+        Set<String> keys = b.keySet();
+        for (String key: keys) {
+            System.out.println(key);
+        }
+    }
+
+    @Test
+    public void iteratorTest() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        b.put("banana", 1);
+        b.put("apple", 10);
+        b.put("orange", 3);
+        b.put("watermelon", 50);
+        b.put("strawberry", 100);
+        for (String key: b) {
+            System.out.println(key + " " + b.get(key));
+        }
+    }
+
+    @Test
+    public void removeTest() {
+        BSTMap<Integer, Integer> b = new BSTMap<>();
+        b.put(8, 8 * 10);
+        b.put(6, 6 * 10);
+        b.put(10, 10 * 10);
+        b.put(2, 2 * 10);
+        b.put(7, 7 * 10);
+        b.put(9, 9 * 10);
+        b.put(13, 13 * 10);
+        b.put(11, 11 * 10);
+        b.put(12, 12 * 10);
+        b.printInOrder();
+        System.out.println("----------");
+        b.remove(2);
+        b.remove(7);
+        b.remove(9);
+        b.printInOrder();
+        System.out.println("----------");
+        b.remove(13);
+        b.remove(11);
+        b.printInOrder();
+        System.out.println("----------");
+        b.put(2, 2 * 10);
+        b.put(7, 7 * 10);
+        b.remove(6);
+        b.printInOrder();
+    }
+
+    @Test
+    public void removeCornerTest() {
+        BSTMap<Integer, Integer> b = new BSTMap<>();
+        b.put(8, 8 * 10);
+        assertNull(b.remove(8, 70));
+        b.printInOrder();
+        assertEquals(80, (int) b.remove(8, 80));
+        b.printInOrder();
+        System.out.println("----------");
+        BSTMap<Integer, Integer> b2 = new BSTMap<>();
+        b2.put(8, 8 * 10);
+        b2.put(6, 6 * 10);
+        b2.put(2, 2 * 10);
+        b2.put(10, 10 * 10);
+        b2.put(12, 12 * 10);
+        b2.remove(8, 80);
+        b2.printInOrder();
+        for (Integer key: b2) {
+            System.out.println(key);
+        }
     }
 }
