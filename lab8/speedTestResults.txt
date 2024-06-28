@@ -1,0 +1,54 @@
+InsertInOrderSpeedTest
+#strings | Time of ULLMap | MyHashMap | HashMap(Java)
+10         0                0           0
+100        0                0           0
+200        0                0           0
+400        0                0.01        0
+800        0.01             0.02        0
+1600       0.03             0.06        0
+3200       0.07             0.13        0
+6400       0.22             0.46        0
+12800      0.83             1.61        0.01
+
+
+Enter # strings to insert into each map: 100
+class hashmap.MyHashMapALBuckets: 0.01 sec
+class hashmap.MyHashMapLLBuckets: 0.00 sec
+class hashmap.MyHashMapTSBuckets: 0.01 sec
+class hashmap.MyHashMapHSBuckets: 0.00 sec
+class hashmap.MyHashMapPQBuckets: 0.00 sec
+
+Enter # strings to insert into each map: 1000
+class hashmap.MyHashMapALBuckets: 0.06 sec
+class hashmap.MyHashMapLLBuckets: 0.04 sec
+class hashmap.MyHashMapTSBuckets: 0.04 sec
+class hashmap.MyHashMapHSBuckets: 0.05 sec
+class hashmap.MyHashMapPQBuckets: 0.04 sec
+
+Enter # strings to insert into each map: 2000
+class hashmap.MyHashMapALBuckets: 0.16 sec
+class hashmap.MyHashMapLLBuckets: 0.15 sec
+class hashmap.MyHashMapTSBuckets: 0.19 sec
+class hashmap.MyHashMapHSBuckets: 0.20 sec
+class hashmap.MyHashMapPQBuckets: 0.16 sec
+
+Enter # strings to insert into each map: 4000
+class hashmap.MyHashMapALBuckets: 0.59 sec
+class hashmap.MyHashMapLLBuckets: 0.60 sec
+class hashmap.MyHashMapTSBuckets: 0.74 sec
+class hashmap.MyHashMapHSBuckets: 0.80 sec
+class hashmap.MyHashMapPQBuckets: 0.62 sec
+
+Enter # strings to insert into each map: 8000
+class hashmap.MyHashMapALBuckets: 2.47 sec
+class hashmap.MyHashMapLLBuckets: 2.42 sec
+class hashmap.MyHashMapTSBuckets: 3.22 sec
+class hashmap.MyHashMapHSBuckets: 3.44 sec
+class hashmap.MyHashMapPQBuckets: 2.59 sec
+
+Enter # strings to insert into each map: 10000
+class hashmap.MyHashMapALBuckets: 3.51 sec
+class hashmap.MyHashMapLLBuckets: 3.78 sec
+class hashmap.MyHashMapTSBuckets: 4.97 sec
+class hashmap.MyHashMapHSBuckets: 5.39 sec
+class hashmap.MyHashMapPQBuckets: 4.03 sec
